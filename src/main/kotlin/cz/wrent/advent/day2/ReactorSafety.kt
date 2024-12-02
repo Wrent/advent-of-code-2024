@@ -4,7 +4,7 @@ import kotlin.math.absoluteValue
 
 fun main() {
     println(countSafeReports(input))
-    // println(getSimilarityScore(input))
+    println(countSafeReportsWithProblemDampener(input))
 }
 
 fun countSafeReports(input: String): Int {
@@ -14,7 +14,7 @@ fun countSafeReports(input: String): Int {
 
 fun countSafeReportsWithProblemDampener(input: String): Int {
     val list = input.split("\n").map { row -> row.split(" ").map { it.toInt() } }
-    return list.count { it.isSafe() }
+    return list.count { it.isSafeWithProblemDampener() }
 }
 
 private val safeDiffs = setOf(1, 2, 3)
@@ -22,6 +22,16 @@ private val safeDiffs = setOf(1, 2, 3)
 private fun List<Int>.isSafe(): Boolean {
     val diffs = this.windowed(2).map { it[0] - it[1] }
     return diffs.all { safeDiffs.contains(it.absoluteValue) } && (diffs.all { it < 0 } || diffs.all { it > 0 })
+}
+
+private fun List<Int>.isSafeWithProblemDampener(): Boolean {
+    val lists = mutableListOf<List<Int>>()
+    for (i in indices) {
+        val new = this.toMutableList()
+        new.removeAt(i)
+        lists.add(new)
+    }
+    return lists.any { it.isSafe() }
 }
 
 // 7 6 4 2 1
