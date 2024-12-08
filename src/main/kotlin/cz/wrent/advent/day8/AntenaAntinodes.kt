@@ -17,7 +17,7 @@ fun findAntinodes(input: String): Int {
         for (coord in coords) {
             for (other in coords) {
                 if (coord == other) continue
-                coordPairs.add(coord to other) // todo remove reverse?
+                coordPairs.add(coord to other)
             }
         }
 
@@ -25,11 +25,9 @@ fun findAntinodes(input: String): Int {
 
         coordPairs.map {
             val vector = Pair(it.second.first - it.first.first, it.second.second - it.first.second)
-            val prolongA = it.first.first - vector.first to it.first.second - vector.second
-            val prolongB = it.second.first + vector.first to it.second.second + vector.second
+            val prolong = it.first.first - vector.first to it.first.second - vector.second
 
-            if (map.contains(prolongA)) antinodes.add(prolongA)
-            if (map.contains(prolongB)) antinodes.add(prolongB)
+            if (map.contains(prolong)) antinodes.add(prolong)
         }
         antinodes
     }.flatten().toSet().size
@@ -47,7 +45,7 @@ fun findAntinodesWithHarmonicResonant(input: String): Int {
         for (coord in coords) {
             for (other in coords) {
                 if (coord == other) continue
-                coordPairs.add(coord to other) // todo remove reverse?
+                coordPairs.add(coord to other)
             }
         }
 
@@ -61,14 +59,6 @@ fun findAntinodesWithHarmonicResonant(input: String): Int {
             while (map.contains(next)) {
                 antinodes.add(next)
                 next = it.first.first + vector.first * i to it.first.second + vector.second * i
-                i++
-            }
-
-            i = 0
-            next = it.second.first - vector.first * i to it.second.second - vector.second * i
-            while (map.contains(next)) {
-                antinodes.add(next)
-                next = it.second.first - vector.first * i to it.second.second - vector.second * i
                 i++
             }
         }
