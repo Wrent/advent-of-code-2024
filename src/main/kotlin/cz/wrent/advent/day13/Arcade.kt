@@ -1,7 +1,10 @@
 package cz.wrent.advent.day13
 
+import kotlin.math.absoluteValue
+
 fun main() {
-    println(countTokens(input, 0))
+    // println(countTokens(input, 0))
+    println(countTokens(input, 10000000000000))
 }
 
 fun countTokens(input: String, diff: Long): Long {
@@ -26,28 +29,59 @@ fun countTokens(input: String, diff: Long): Long {
 
         var current = Pair(initial * a.first, initial * a.second)
         var last = 0L
+        var lastDiff = 0L
+        var times = 1L
+        val seenRems = mutableMapOf<Pair<Long, Long>, Long>()
         while (current.first > 0 && current.second > 0) {
             val remainingX = prize.first - current.first
             val remainingY = prize.second - current.second
 
-            val step = 1L
-            if (remainingX % b.first == 0L && remainingY % b.second == 0L) {
+            var step = 1L
+            val remFirst = remainingX % b.first
+            val remSecond = remainingY % b.second
+            val seen = seenRems[Pair(remFirst, remSecond)] ?: 0
+            // println(seen)
+            if (seen > 100) {
+                match = Long.MAX_VALUE
+                break
+            }
+            seenRems.computeIfPresent(Pair(remFirst, remSecond)) { _, v -> v + 1 }
+            seenRems.computeIfAbsent(Pair(remFirst, remSecond)) { 1 }
+            // println("$i: $remFirst, $remSecond")
+            if (remFirst == 0L && remSecond == 0L) {
+                // println("$i: ${last - i}")
+                if (last != 0L) {
+                    step = last - i
+                }
+                if (step == 0L) {
+                    match = Long.MAX_VALUE
+                    break
+                }
                 last = i
                 val one = remainingX / b.first
                 val two = remainingY / b.second
+                val dif = one - two
+                val diffDiff = dif - lastDiff
+                lastDiff = dif
 
-                // println("one & two diff ${one - two}")
+                if (lastDiff != 0L && diffDiff != 0L) {
+                    times = (dif / diffDiff).absoluteValue
+                    // println("dif $dif diff $diffDiff, times $times")
+                }
+
+                // println("$i: one & two diff ${dif}")
                 if (one == two) {
                     val currentPrice = 3 * i + one
-                    println("found match with current price $currentPrice, $current")
+                    // println("found match with current price $currentPrice, $current")
                     if (currentPrice < match) {
                         match = currentPrice
                     }
                 }
             }
             // println("$i: $current")
-            current = Pair(current.first - step * a.first, current.second - step * a.second)
-            i--
+            current = Pair(current.first - step * times * a.first, current.second - step * times * a.second)
+            i -= step * times
+            times = 1
         }
         println("match $match")
         match
